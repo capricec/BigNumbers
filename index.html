@@ -50,21 +50,28 @@
         margin: 0;
         padding: 0;
         display: grid;
-        grid-template-columns: minmax(0, 341px);
+        grid-template-columns: repeat(2, minmax(0, 341px));
         gap: 1.25rem;
         align-items: start;
       }
-      a {
+      @media (max-width: 720px) {
+        ul {
+          grid-template-columns: minmax(0, 341px);
+        }
+      }
+      .story {
         display: grid;
         gap: 0.7rem;
         color: var(--ink);
+      }
+      a.story {
         text-decoration: none;
         transition: transform 0.2s ease;
       }
-      a:hover {
+      a.story:hover {
         transform: translateY(-2px);
       }
-      a img {
+      .story__media {
         display: block;
         width: 341px;
         max-width: 100%;
@@ -74,29 +81,33 @@
         border: 1px solid rgba(15, 36, 48, 0.1);
         background: #c5d5dc;
       }
-      a .meta {
+      .story__media--soon {
+        display: grid;
+        place-items: center;
+        background: linear-gradient(165deg, #ebe4d4 0%, #d5c19a 100%);
+        color: var(--ink-soft);
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .story--soon {
+        opacity: 0.72;
+        cursor: default;
+      }
+      .story__meta {
         padding: 0 0.15rem 0.35rem;
       }
-      a strong {
+      .story strong {
         display: block;
         font-family: var(--font-display);
         font-size: 1.2rem;
         margin-bottom: 0.2rem;
         letter-spacing: -0.02em;
       }
-      a span {
+      .story span {
         color: var(--ink-soft);
         font-size: 0.85rem;
-      }
-      a.story--plain {
-        min-height: calc(341px * 628 / 1024);
-        padding: 1rem 1.15rem;
-        background: rgba(248, 252, 253, 0.92);
-        border: 1px solid rgba(15, 36, 48, 0.1);
-        align-content: end;
-      }
-      a.story--plain:hover {
-        border-color: rgba(15, 36, 48, 0.22);
       }
     </style>
   </head>
@@ -108,18 +119,30 @@
     </p>
     <ul>
       <li>
-        <a href="./atoms/">
+        <a class="story" href="./atoms/">
           <img
+            class="story__media"
             src="./media/hub/atoms.jpg"
             alt="Atoms story — GPT-6 atom square over Central Park"
             width="341"
             height="209"
           />
-          <div class="meta">
+          <div class="story__meta">
             <strong>Atoms</strong>
             <span>Training FLOPs as hydrogen atoms on a map</span>
           </div>
         </a>
+      </li>
+      <li>
+        <div class="story story--soon" aria-disabled="true">
+          <div class="story__media story__media--soon" aria-hidden="true">
+            Coming soon
+          </div>
+          <div class="story__meta">
+            <strong>Sand</strong>
+            <span>Training FLOPs as grains of sand — by volume</span>
+          </div>
+        </div>
       </li>
     </ul>
   </body>
