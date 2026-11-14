@@ -19,7 +19,7 @@ import {
   stopNeighborhood,
   metersPerPixel,
   zoomToFitSide,
-} from "./atoms.js";
+} from "./data.js";
 
 // Vite serves the worker as a separate asset; point MapLibre at it explicitly.
 setWorkerUrl(maplibreWorker);
@@ -91,10 +91,13 @@ function lerpLog(a, b, t) {
 /** GPT-1 side ≈ pizza-box side — square + photo share this. */
 const GPT1_SIDE_M = sideMeters(18e18);
 
+const assetUrl = (path) =>
+  `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
+
 const ZOOM_PHOTOS = [
   {
     id: "wide",
-    src: "/media/gpt-wide-picnic.jpg",
+    src: assetUrl("media/atoms/gpt-wide-picnic.jpg"),
     className: "map-photo map-photo--wide",
     zIndex: 1,
     groundSideM: 30.53,
@@ -104,7 +107,7 @@ const ZOOM_PHOTOS = [
   },
   {
     id: "picnic",
-    src: "/media/gpt2-picnic.jpg",
+    src: assetUrl("media/atoms/gpt2-picnic.jpg"),
     className: "map-photo map-photo--picnic",
     zIndex: 2,
     groundSideM: 5.92,
@@ -113,7 +116,7 @@ const ZOOM_PHOTOS = [
   },
   {
     id: "pizza",
-    src: "/media/gpt1-pizza.jpg",
+    src: assetUrl("media/atoms/gpt1-pizza.jpg"),
     className: "map-photo map-photo--pizza",
     zIndex: 3,
     // Box ≈ 52.6% of cover crop → scale so box side = GPT1_SIDE_M
@@ -723,8 +726,9 @@ export function createMapView(container) {
     const h = container.clientHeight || window.innerHeight;
     const isMobile = w < 720;
     return {
-      top: Math.round(h * 0.1),
-      bottom: Math.round(h * (isMobile ? 0.32 : 0.1)),
+      // Mobile: keep the framed square in the upper ~half so cards sit below
+      top: Math.round(h * (isMobile ? 0.04 : 0.1)),
+      bottom: Math.round(h * (isMobile ? 0.52 : 0.1)),
       left: Math.round(w * (isMobile ? 0.06 : 0.28)),
       right: Math.round(w * (isMobile ? 0.06 : 0.16)),
     };

@@ -1,0 +1,602 @@
+:root {
+  --bg-0: #e8f0f2;
+  --bg-1: #d4e4ea;
+  --ink: #0f2430;
+  --ink-soft: #3a5563;
+  --panel: rgba(248, 252, 253, 0.92);
+  --panel-border: rgba(15, 36, 48, 0.1);
+  --accent: #0d7c6e;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Sora", system-ui, sans-serif;
+  --stage-pad: clamp(1rem, 3vw, 2.5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.55;
+  background: #d4e4ea;
+  min-height: 100vh;
+}
+
+.frame {
+  position: relative;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-square-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.map-photo-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.map-photo {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateZ(0);
+  will-change: opacity, left, top, width, height, mask-image, mask-position;
+  /*
+   * Tone plates toward Esri World Imagery (warmer / more orange).
+   * Tweak here: raise sepia + hue-rotate for more orange; lower saturate
+   * to mute the AI greens; brightness/contrast to match the basemap.
+   */
+  filter: saturate(0.58) brightness(0.82) contrast(0.96) sepia(0.28)
+    hue-rotate(-12deg);
+  pointer-events: none;
+}
+
+.map-photo--wide {
+  filter: saturate(0.52) brightness(0.8) contrast(0.94) sepia(0.32)
+    hue-rotate(-14deg);
+}
+
+.map-photo--picnic,
+.map-photo--pizza {
+  filter: saturate(0.56) brightness(0.82) contrast(0.95) sepia(0.26)
+    hue-rotate(-12deg);
+}
+
+.map-square-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.map-square-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  paint-order: stroke fill;
+  stroke: rgba(248, 252, 253, 0.92);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+/* Scale bar on each square’s bottom edge (scrolls away with the square) */
+.map-scale__bar,
+.map-scale__tick {
+  stroke: #fff;
+  stroke-width: 2px;
+  stroke-linecap: square;
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.map-scale__label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  fill: #fff;
+  paint-order: stroke fill;
+  stroke: rgba(15, 36, 48, 0.75);
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  dominant-baseline: ideographic;
+}
+
+.map-scale__area {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  paint-order: stroke fill;
+  stroke: rgba(248, 252, 253, 0.9);
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+  dominant-baseline: ideographic;
+}
+
+.map-square-label--active {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.map-square-label--incoming {
+  font-size: 13px;
+}
+
+.map-square-label--tiny {
+  font-size: 15px;
+  font-weight: 700;
+  stroke-width: 5px;
+}
+
+.map .maplibregl-ctrl-attrib {
+  font-size: 0.65rem;
+  background: rgba(248, 252, 253, 0.75);
+}
+
+.play-control {
+  position: absolute;
+  left: var(--stage-pad);
+  bottom: var(--stage-pad);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1rem 0.65rem 0.85rem;
+  border: 1px solid var(--panel-border);
+  background: rgba(248, 252, 253, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 28px rgba(15, 36, 48, 0.08);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+/* Manual scroll past the intro — Play leaves; Pause / Zoom out stay */
+.play-control.is-scrolled-away {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+.play-control:hover {
+  background: #fff;
+  border-color: rgba(15, 36, 48, 0.18);
+}
+
+.play-control__icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 0 6px 10px;
+  border-color: transparent transparent transparent var(--ink);
+}
+
+.play-control.is-playing .play-control__icon {
+  width: 10px;
+  height: 12px;
+  border: none;
+  background:
+    linear-gradient(var(--ink), var(--ink)) 0 0 / 3px 100% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 7px 0 / 3px 100% no-repeat;
+}
+
+/* Zoom-out affordance: inverted play triangle (pointing up-left as “out”) */
+.play-control.is-zoom-out .play-control__icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 10px 6px 0;
+  border-color: transparent var(--ink) transparent transparent;
+  background: none;
+}
+
+.play-control.is-zooming-out .play-control__icon {
+  width: 10px;
+  height: 12px;
+  border: none;
+  background:
+    linear-gradient(var(--ink), var(--ink)) 0 0 / 3px 100% no-repeat,
+    linear-gradient(var(--ink), var(--ink)) 7px 0 / 3px 100% no-repeat;
+}
+
+.scale-menu {
+  position: absolute;
+  top: auto;
+  bottom: var(--stage-pad);
+  right: calc(var(--stage-pad) - 20px);
+  transform: none;
+  z-index: 2;
+  width: min(12.5rem, 30vw);
+  padding: 0.85rem 0.75rem 0.95rem;
+  background: rgba(248, 252, 253, 0.92);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 32px rgba(15, 36, 48, 0.07);
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.scale-menu.is-visible {
+  opacity: 1;
+}
+
+.scale-menu__label {
+  margin: 0 0 0.65rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.scale-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.scale-menu__item {
+  display: grid;
+  grid-template-columns: 0.7rem 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.38rem 0.45rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.scale-menu__item:hover {
+  background: rgba(15, 36, 48, 0.05);
+  color: var(--ink);
+}
+
+.scale-menu__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 0.15rem;
+  box-shadow: inset 0 0 0 1px rgba(15, 36, 48, 0.12);
+}
+
+.scale-menu__name {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.scale-menu__power {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+}
+
+.scale-menu__item.is-passed {
+  opacity: 0.5;
+}
+
+.scale-menu__item.is-active {
+  opacity: 1;
+  color: var(--ink);
+  background: rgba(15, 36, 48, 0.06);
+  transform: translateX(-2px);
+}
+
+.scale-menu__item.is-active .scale-menu__name {
+  font-weight: 700;
+}
+
+.scale-menu__item.is-active .scale-menu__swatch {
+  box-shadow:
+    inset 0 0 0 1px rgba(15, 36, 48, 0.2),
+    0 0 0 2px color-mix(in srgb, var(--item-color) 35%, transparent);
+}
+
+.scale-menu__item.is-upcoming {
+  opacity: 0.45;
+}
+
+.scrolly {
+  position: relative;
+  z-index: 1;
+  margin-top: -100vh;
+  pointer-events: none;
+}
+
+/*
+ * Manual scroll (default): free-flowing cards, pre-pinning behavior.
+ * Play / zoom-out (`body.is-autoplay`): sticky centered cards + tall runways.
+ */
+.chapter {
+  position: relative;
+  min-height: 120vh;
+  display: flex;
+  align-items: center;
+  padding: 22vh var(--stage-pad);
+  pointer-events: none;
+}
+
+.chapter--brand {
+  min-height: 100vh;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: var(--stage-pad);
+  padding-bottom: 18vh;
+}
+
+.chapter__pin {
+  /* Real box (not display:contents) so Play can re-parent layout reliably */
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  pointer-events: none;
+}
+
+.chapter__panel--brand {
+  max-width: min(92vw, 48rem);
+}
+
+.chapter[data-chapter="trillion"] {
+  min-height: 70vh;
+  padding-top: 12vh;
+  padding-bottom: 18vh;
+}
+
+.chapter--finale:not([data-chapter="trillion"]) {
+  min-height: 140vh;
+  padding-bottom: 24vh;
+}
+
+/*
+ * Autoplay only: tall scroll runways + the active card is fixed/centered
+ * so it stays put while the map keeps zooming. Manual scroll CSS above
+ * is intentionally unchanged.
+ */
+body.is-autoplay .chapter {
+  min-height: 260vh;
+  display: block;
+  align-items: stretch;
+  padding: 0 var(--stage-pad);
+}
+
+body.is-autoplay .chapter--brand {
+  min-height: 220vh;
+  padding: 0 var(--stage-pad);
+}
+
+body.is-autoplay .chapter[data-chapter="trillion"] {
+  min-height: 160vh;
+  padding: 0 var(--stage-pad);
+}
+
+body.is-autoplay .chapter--finale:not([data-chapter="trillion"]) {
+  min-height: 240vh;
+  padding: 0 var(--stage-pad);
+}
+
+body.is-autoplay .chapter__pin {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 220vh;
+  pointer-events: none;
+}
+
+body.is-autoplay .chapter__panel {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+  transform: none;
+}
+
+body.is-autoplay .chapter.is-active .chapter__panel {
+  position: fixed;
+  left: var(--stage-pad);
+  top: var(--stage-pad);
+  right: auto;
+  z-index: 5;
+  width: fit-content;
+  max-width: min(28rem, calc(100vw - 2 * var(--stage-pad)));
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+/* Experience name/description — serif, distinct from body */
+.chapter__deck {
+  margin: 0 0 1.15rem;
+  max-width: 28rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.7vw, 1.1rem);
+  font-weight: 400;
+  font-optical-sizing: auto;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.chapter__body--brand {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+}
+
+.chapter__panel {
+  width: fit-content;
+  max-width: 28rem;
+  pointer-events: auto;
+  padding: 1.35rem 1.5rem 1.5rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 40px rgba(15, 36, 48, 0.08);
+  opacity: 0.4;
+  transform: translateY(16px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.chapter.is-active .chapter__panel {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chapter__kicker {
+  margin: 0 0 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.chapter__title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3.2vw, 2.05rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* After .chapter__title so it wins the cascade (same specificity otherwise) */
+.chapter__title.chapter__title--brand {
+  font-size: clamp(2.75rem, 8.5vw, 4.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+  margin-bottom: 0.75rem;
+  max-width: none;
+}
+
+.chapter__body {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+.chapter__body + .chapter__body {
+  margin-top: 0.85rem;
+}
+
+.chapter__body strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .play-control {
+    bottom: 4.5rem;
+  }
+
+  /* Zoom legend is desktop-only */
+  .scale-menu {
+    display: none !important;
+  }
+
+  .chapter {
+    align-items: flex-end;
+    min-height: 130vh;
+    padding: 8vh var(--stage-pad) 4vh;
+  }
+
+  .chapter--brand {
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: var(--stage-pad);
+    padding-bottom: 4vh;
+  }
+
+  .chapter[data-chapter="trillion"] {
+    min-height: 80vh;
+    padding-top: 8vh;
+    padding-bottom: 4vh;
+  }
+
+  .chapter__panel {
+    width: 100%;
+    max-width: none;
+  }
+
+  .chapter__panel--brand {
+    max-width: none;
+    width: 100%;
+  }
+
+  body.is-autoplay .chapter,
+  body.is-autoplay .chapter--brand,
+  body.is-autoplay .chapter[data-chapter="trillion"],
+  body.is-autoplay .chapter--finale:not([data-chapter="trillion"]) {
+    min-height: 260vh;
+    padding: 0 var(--stage-pad);
+    align-items: stretch;
+  }
+
+  body.is-autoplay .chapter.is-active .chapter__panel {
+    left: var(--stage-pad);
+    right: var(--stage-pad);
+    width: auto;
+    max-width: none;
+  }
+}

@@ -1,8 +1,8 @@
-import { CHAPTERS } from "./content.js";
-import { ATOM_STOPS, formatAtoms, nearestStop } from "./atoms.js";
+import { CHAPTERS, LADDER_STOPS } from "./content.js";
+import { formatAtoms, nearestStop } from "./data.js";
 import { createMapView } from "./mapView.js";
-import { createScrolly } from "./scrolly.js";
-import { createPlayer } from "./player.js";
+import { createScrolly } from "../shared/scrolly.js";
+import { createPlayer } from "../shared/player.js";
 
 const mapEl = document.getElementById("map");
 const scrollyRoot = document.getElementById("scrolly");
@@ -14,7 +14,7 @@ const mapView = createMapView(mapEl);
 const menuButtons = new Map();
 
 function mountScaleMenu() {
-  for (const stop of ATOM_STOPS) {
+  for (const stop of LADDER_STOPS) {
     const li = document.createElement("li");
     const btn = document.createElement("button");
     btn.type = "button";
@@ -66,7 +66,7 @@ function jumpToStop(stop) {
 
 function updateScaleMenu(log10Visible) {
   const active = nearestStop(log10Visible);
-  for (const stop of ATOM_STOPS) {
+  for (const stop of LADDER_STOPS) {
     const btn = menuButtons.get(stop.id);
     if (!btn) continue;
     btn.classList.remove("is-active", "is-passed", "is-upcoming");
@@ -93,6 +93,9 @@ function mountChapters() {
     }
     section.dataset.chapter = chapter.id;
     section.id = `chapter-${chapter.id}`;
+
+    const pin = document.createElement("div");
+    pin.className = "chapter__pin";
 
     const panel = document.createElement("article");
     panel.className = chapter.isBrand
@@ -129,7 +132,8 @@ function mountChapters() {
       panel.append(p);
     }
 
-    section.append(panel);
+    pin.append(panel);
+    section.append(pin);
     scrollyRoot.append(section);
     scrolly.register(section, index);
   });
@@ -143,18 +147,72 @@ const scrolly = createScrolly({
   },
 });
 
-const player = createPlayer({ button: playBtn });
+function setAutoplayLayout(on) {
+  const doc = document.documentElement;
+  const before = doc.scrollHeight;
+  const y = window.scrollY;
+  document.body.classList.toggle("is-autoplay", on);
+  // Force layout so fixed/pin styles apply before auto-scroll starts
+  void doc.offsetHeight;
+  const after = doc.scrollHeight;
+  if (before > 1 && after > 1 && Math.abs(after - before) > 8) {
+    window.scrollTo(0, (y / before) * after);
+  }
+  scrolly.measure();
+  mapView.resize();
+}
+
+let playerMode = "idle";
+
+function getPlayStartY() {
+  // Skip the brand intro — jump to the first story card (centered)
+  const startChapter =
+    CHAPTERS.find((c) => !c.isBrand) ?? CHAPTERS[1] ?? CHAPTERS[0];
+  if (!startChapter) return 0;
+  const el = document.getElementById(`chapter-${startChapter.id}`);
+  if (!el) return 0;
+  const top = el.getBoundingClientRect().top + window.scrollY;
+  return Math.max(0, top + el.offsetHeight * 0.08);
+}
+
+const player = createPlayer({
+  button: playBtn,
+  getPlayStartY,
+  onModeChange(mode) {
+    playerMode = mode;
+    // Pin only while Play / Zoom out are driving the page
+    setAutoplayLayout(mode === "playing" || mode === "zoomingOut");
+    syncPlayButtonVisibility();
+    if (mode === "playing") {
+      // Sync map to the skipped-ahead chapter after layout + scroll jump
+      requestAnimationFrame(() => scrolly.measure());
+    }
+  },
+});
+
+function syncPlayButtonVisibility() {
+  const driven =
+    playerMode === "playing" ||
+    playerMode === "zoomingOut" ||
+    playerMode === "readyZoomOut";
+  // Once you scroll the story yourself, Play ducks out of the way
+  const scrolledPastIntro = window.scrollY > window.innerHeight * 0.45;
+  playBtn.classList.toggle("is-scrolled-away", !driven && scrolledPastIntro);
+}
 
 mountScaleMenu();
 mountChapters();
 scrolly.start();
+syncPlayButtonVisibility();
 
 window.__bignumbers = { scrolly, mapView, player, CHAPTERS };
 
+window.addEventListener("scroll", syncPlayButtonVisibility, { passive: true });
 window.addEventListener(
   "resize",
   () => {
     mapView.resize();
+    syncPlayButtonVisibility();
   },
   { passive: true }
 );

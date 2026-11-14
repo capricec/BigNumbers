@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sand — Big Numbers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="frame">
+      <div class="stage">
+        <div id="volume" class="volume" role="img" aria-label="Sand pile volume growing with scroll"></div>
+
+        <button
+          type="button"
+          class="play-control"
+          id="play-control"
+          aria-pressed="false"
+          aria-label="Play"
+        >
+          <span class="play-control__icon" aria-hidden="true"></span>
+          <span class="play-control__label">Play</span>
+        </button>
+
+        <nav class="scale-menu" id="scale-menu" aria-label="Training stops as sand">
+          <p class="scale-menu__label">Volume ladder</p>
+          <ol class="scale-menu__list" id="scale-menu-list"></ol>
+        </nav>
+      </div>
+
+      <main class="scrolly" id="scrolly"></main>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

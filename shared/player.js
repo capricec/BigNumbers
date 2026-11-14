@@ -10,14 +10,23 @@ export const PLAY_DURATION_MS = 40_000;
 /** Zoom-out (scroll back to top) duration. */
 export const ZOOM_OUT_DURATION_MS = 20_000;
 
-export function createPlayer({ button }) {
+export function createPlayer({ button, onModeChange, getPlayStartY }) {
   /** @type {"idle" | "playing" | "readyZoomOut" | "zoomingOut"} */
   let mode = "idle";
   let raf = 0;
   let lastAt = 0;
   let ignoreScrollPauseUntil = 0;
+  /** Scroll Y where the current play run began (for remaining-distance timing) */
+  let playFromY = 0;
 
   const labelEl = button.querySelector(".play-control__label");
+
+  function setMode(next) {
+    if (mode === next) return;
+    mode = next;
+    syncButton();
+    onModeChange?.(mode);
+  }
 
   function maxScroll() {
     return Math.max(
@@ -65,15 +74,15 @@ export function createPlayer({ button }) {
     lastAt = now;
 
     const end = maxScroll();
-    const speed = end / (PLAY_DURATION_MS / 1000);
+    const span = Math.max(1, end - playFromY);
+    const speed = span / (PLAY_DURATION_MS / 1000);
     const next = Math.min(end, window.scrollY + speed * dt);
     ignoreScrollPauseUntil = performance.now() + 80;
     window.scrollTo(0, next);
 
     if (next >= end - 0.5) {
       cancelLoop();
-      mode = "readyZoomOut";
-      syncButton();
+      setMode("readyZoomOut");
       return;
     }
     raf = requestAnimationFrame(playFrame);
@@ -93,8 +102,7 @@ export function createPlayer({ button }) {
 
     if (next <= 0.5) {
       cancelLoop();
-      mode = "idle";
-      syncButton();
+      setMode("idle");
       return;
     }
     raf = requestAnimationFrame(zoomOutFrame);
@@ -102,14 +110,24 @@ export function createPlayer({ button }) {
 
   function play() {
     if (mode === "playing") return;
+    // Switch layout first (e.g. sticky pin runways), then measure scroll range
+    setMode("playing");
     const end = maxScroll();
-    if (end <= 0) return;
-    if (window.scrollY >= end - 2) {
-      ignoreScrollPauseUntil = performance.now() + 100;
-      window.scrollTo(0, 0);
+    if (end <= 0) {
+      setMode("idle");
+      return;
     }
-    mode = "playing";
-    syncButton();
+
+    ignoreScrollPauseUntil = performance.now() + 120;
+    // Skip the intro card — Play assumes it was already read
+    const startY = clamp(
+      getPlayStartY?.() ?? 0,
+      0,
+      Math.max(0, end - 1)
+    );
+    playFromY = startY;
+    window.scrollTo(0, startY);
+
     lastAt = 0;
     raf = requestAnimationFrame(playFrame);
   }
@@ -117,12 +135,10 @@ export function createPlayer({ button }) {
   function startZoomOut() {
     if (mode === "zoomingOut") return;
     if (window.scrollY <= 0.5) {
-      mode = "idle";
-      syncButton();
+      setMode("idle");
       return;
     }
-    mode = "zoomingOut";
-    syncButton();
+    setMode("zoomingOut");
     lastAt = 0;
     raf = requestAnimationFrame(zoomOutFrame);
   }
@@ -130,15 +146,13 @@ export function createPlayer({ button }) {
   function stop() {
     if (mode === "playing") {
       cancelLoop();
-      mode = "idle";
-      syncButton();
+      setMode("idle");
       return;
     }
     if (mode === "zoomingOut") {
       cancelLoop();
       // Stay on Zoom out so they can resume
-      mode = "readyZoomOut";
-      syncButton();
+      setMode("readyZoomOut");
     }
   }
 
@@ -183,16 +197,22 @@ export function createPlayer({ button }) {
   });
 
   syncButton();
+  onModeChange?.(mode);
 
   return {
     play,
     stop,
     toggle,
     isPlaying: () => mode === "playing" || mode === "zoomingOut",
+    getMode: () => mode,
     destroy() {
       cancelLoop();
-      mode = "idle";
+      setMode("idle");
       button.removeEventListener("click", toggle);
     },
   };
+}
+
+function clamp(v, a, b) {
+  return Math.min(b, Math.max(a, v));
 }
