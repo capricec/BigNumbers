@@ -50,7 +50,7 @@
         margin: 0;
         padding: 0;
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 341px));
+        grid-template-columns: repeat(3, minmax(341px, 341px));
         gap: 1.25rem;
         align-items: start;
       }
@@ -85,6 +85,16 @@
         display: grid;
         place-items: center;
         background: linear-gradient(165deg, #ebe4d4 0%, #d5c19a 100%);
+        color: var(--ink-soft);
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+      .story__media--soon2 {
+        display: grid;
+        place-items: center;
+        background: linear-gradient(165deg, #ebe4d4 0%, #9ab8d5 100%);
         color: var(--ink-soft);
         font-family: var(--font-display);
         font-size: 1.05rem;
@@ -135,12 +145,23 @@
       </li>
       <li>
         <div class="story story--soon" aria-disabled="true">
+          <div class="story__media story__media--soon2" aria-hidden="true">
+            Coming soon
+          </div>
+          <div class="story__meta">
+            <strong>What is a trillion?</strong>
+            <span>Exploring the scale of a number used more often than you might think</span>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="story story--soon" aria-disabled="true">
           <div class="story__media story__media--soon" aria-hidden="true">
             Coming soon
           </div>
           <div class="story__meta">
             <strong>Sand</strong>
-            <span>Training FLOPs as grains of sand — by volume</span>
+            <span>Training FLOPs as grains of sand</span>
           </div>
         </div>
       </li>

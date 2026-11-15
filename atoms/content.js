@@ -63,7 +63,7 @@ const ALL_CHAPTERS = [
     kicker: g6.digitsLabel,
     title: "GPT-6 Astra’s training.",
     body: [
-      `About <strong>${g6.atomsLabel}</strong> floating point operations (arithmetic calculations like addition or multiplication) were used to train the model, just shy of an octillion.`,
+      `An estimated <strong>${g6.atomsLabel}</strong> floating point operations (arithmetic calculations like addition or multiplication) were used to train the model, just shy of an octillion.`,
       `A square of this many atoms laid flat would cover almost 37 blocks of New York City from Henry Hudson Parkway to 1st Avenue.`,
     ],
     log10Target: Math.log10(g6.atoms),
@@ -74,7 +74,7 @@ const ALL_CHAPTERS = [
     kicker: g4.digitsLabel,
     title: "GPT-4.",
     body: [
-      `Just three years earlier, in 2023, GPT-4 used <strong>${g4.atomsLabel}</strong> floating point operations (FLOP), a little over 2% of that used by GPT-6. This amount of hydrogen atoms laid flat would cover almost 52 acres of Central Park.`,
+      `Just three years earlier, in 2023, GPT-4 used an estimated <strong>${g4.atomsLabel}</strong> floating point operations (FLOP), a little over 2% of that used by GPT-6. This amount of hydrogen atoms laid flat would cover almost 52 acres of Central Park.`,
     ],
     log10Target: Math.log10(g4.atoms),
     stopId: "gpt4",
@@ -84,7 +84,7 @@ const ALL_CHAPTERS = [
     kicker: g35.digitsLabel,
     title: "GPT-3.5.",
     body: [
-      `In 2022, GPT-3.5 used an estimated <strong>${g35.atomsLabel}</strong> FLOP to train.  That amount of atoms laid flat would cover <strong>${g35.area.primary}</strong>, roughly the area of six football fields.`,
+      `In 2022, GPT-3.5 used an estimated <strong>${g35.atomsLabel}</strong> FLOP to train.  That amount of atoms laid flat would cover <strong>${g35.area.primary}</strong>, roughly the area of five football fields.`,
     ],
     log10Target: Math.log10(g35.atoms),
     stopId: "gpt35",
@@ -94,7 +94,7 @@ const ALL_CHAPTERS = [
     kicker: g2.digitsLabel,
     title: "GPT-2.",
     body: [
-      `In 2019, GPT-2 used an estimated <strong>${g2.atomsLabel}</strong> FLOP, 1/188,000 of that used by GPT-6. That amount of hydrogen atoms laid flat would cover <strong>${g2.area.primary}</strong>, about the span of a small picnic on the lawn.`,
+      `In 2019, GPT-2 used an estimated <strong>${g2.atomsLabel}</strong> FLOP, 1/188,000 of that used by GPT-6. That amount of hydrogen atoms laid flat would cover <strong>${g2.area.primary}</strong>, about the span of a picnic on the lawn.`,
     ],
     log10Target: Math.log10(g2.atoms),
     stopId: "gpt2",
