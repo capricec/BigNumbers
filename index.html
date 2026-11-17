@@ -50,7 +50,7 @@
         margin: 0;
         padding: 0;
         display: grid;
-        grid-template-columns: repeat(3, minmax(341px, 341px));
+        grid-template-columns: repeat(auto-fill, minmax(341px, 341px));
         gap: 1.25rem;
         align-items: start;
       }
@@ -144,15 +144,34 @@
         </a>
       </li>
       <li>
-        <div class="story story--soon" aria-disabled="true">
-          <div class="story__media story__media--soon2" aria-hidden="true">
-            Coming soon
-          </div>
+        <a class="story" href="./trillion/">
+          <img
+            class="story__media"
+            src="./media/hub/trillion.png"
+            alt="What is a trillion? — clock and ladder of million to trillion"
+            width="341"
+            height="209"
+          />
           <div class="story__meta">
             <strong>What is a trillion?</strong>
-            <span>Exploring the scale of a number used more often than you might think</span>
+            <span>How long does it take to reach a trillion?</span>
           </div>
-        </div>
+        </a>
+      </li>
+      <li>
+        <a class="story" href="./twh/">
+          <img
+            class="story__media"
+            src="./media/hub/twh.png"
+            alt="What is a TWh? — spending one terawatt-hour on everyday benefits"
+            width="341"
+            height="209"
+          />
+          <div class="story__meta">
+            <strong>What is a TWh?</strong>
+            <span>How could you spend one Trillion Watt-Hours?</span>
+          </div>
+        </a>
       </li>
       <li>
         <div class="story story--soon" aria-disabled="true">
@@ -160,8 +179,8 @@
             Coming soon
           </div>
           <div class="story__meta">
-            <strong>Sand</strong>
-            <span>Training FLOPs as grains of sand</span>
+            <strong>What is an octillion?</strong>
+            <span>Experiments in branching as a visual metaphor</span>
           </div>
         </div>
       </li>

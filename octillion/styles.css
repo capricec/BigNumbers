@@ -1,0 +1,257 @@
+:root {
+  --ink: #f4f7f9;
+  --ink-soft: #b7c4cc;
+  --ink-dim: #7d8f9a;
+  --bg-0: #071018;
+  --bg-1: #0b1620;
+  --line: rgba(232, 238, 242, 0.08);
+  --accent: #f0b429;
+  --accent-soft: #f6d889;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Sora", system-ui, sans-serif;
+  --page-pad: clamp(1.25rem, 4vw, 3rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -8%, #1a3340 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+  padding: clamp(1.25rem, 4vw, 2.5rem) var(--page-pad) 3rem;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--ink-dim);
+  text-decoration: none;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.page {
+  max-width: 64rem;
+}
+
+.intro {
+  margin-bottom: 1.5rem;
+  max-width: 40rem;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.intro__deck {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+.stage-wrap {
+  display: grid;
+  gap: 1rem;
+}
+
+.tree-stage {
+  position: relative;
+  width: 100%;
+  height: min(72vh, 720px);
+  min-height: 400px;
+  border: 1px solid rgba(240, 180, 41, 0.22);
+  background: #071018;
+  overflow: hidden;
+}
+
+.tree-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.hud__label {
+  margin: 0 0 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.hud__value {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--accent-soft);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+  max-width: min(100%, 28rem);
+}
+
+.hud__meta {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+
+.hud__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.figure-nav {
+  margin-top: 0.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.figure-nav__label {
+  margin: 0 0 0.65rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.tier-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.55rem;
+}
+
+.tier-legend__item {
+  display: inline-flex;
+}
+
+.tier-legend__jump {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.4rem 0.7rem 0.4rem 0.55rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.tier-legend__jump:hover {
+  color: var(--ink);
+  border-color: rgba(232, 238, 242, 0.28);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tier-legend__jump.is-active {
+  color: var(--ink);
+  border-color: rgba(240, 180, 41, 0.45);
+  background: rgba(240, 180, 41, 0.08);
+}
+
+.tier-legend__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+  flex-shrink: 0;
+}
+
+.tier-legend__label {
+  line-height: 1;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.85rem 1.25rem;
+  min-width: 9.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: #1a1204;
+}
+
+.btn--primary:hover {
+  background: var(--accent-soft);
+}
+
+.btn--primary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border-color: var(--line);
+}
+
+.btn--ghost:hover {
+  color: var(--ink);
+  border-color: var(--ink-soft);
+}
+
+@media (max-width: 640px) {
+  .hud {
+    align-items: stretch;
+  }
+
+  .hud__actions {
+    width: 100%;
+  }
+
+  .btn {
+    flex: 1;
+  }
+}

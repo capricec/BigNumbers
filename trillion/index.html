@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What is a trillion? — Big Numbers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="back" href="../">← Big Numbers</a>
+
+    <main class="page">
+      <header class="intro">
+        <h1>What is a trillion?</h1>
+        <p class="intro__deck">
+          A trillion is a million millions, but what does that even mean? Imagine you make 100 million dollars per second.  How long will it take to
+          reach a trillion?
+        </p>
+      </header>
+
+      <div
+        class="targets"
+        id="targets"
+        role="radiogroup"
+        aria-label="Choose a real-world figure"
+      ></div>
+
+      <div class="controls">
+        <div class="controls__actions">
+          <button type="button" class="btn btn--primary" id="clock-btn">
+            Start the clock
+          </button>
+        </div>
+        <div class="meter" id="meter" aria-live="polite">
+          <p class="meter__label" id="meter-label">Running total</p>
+          <p class="meter__value" id="meter-value">$0</p>
+        </div>
+      </div>
+
+      <ol class="ladder" id="ladder" aria-label="Million through target"></ol>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

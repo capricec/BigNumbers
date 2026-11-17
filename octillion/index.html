@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What is an octillion? — Big Numbers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700&family=Sora:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="back" href="../">← Big Numbers</a>
+
+    <main class="page">
+      <header class="intro">
+        <h1>What is an octillion?</h1>
+        <p class="intro__deck">
+          Start at ten and grow one canopy. Million, billion, and trillion each
+          lock in turn — then pink copies meet in a triangle of ten, and from
+          there nest as a Sierpinski gasket (with the hole filled) out to a
+          quadrillion.
+        </p>
+      </header>
+
+      <div class="stage-wrap">
+        <div id="tree-stage" class="tree-stage" aria-hidden="true"></div>
+
+        <div class="hud">
+          <div class="hud__number" aria-live="polite">
+            <p class="hud__label">Current number</p>
+            <p class="hud__value" id="number-value">10</p>
+            <p class="hud__meta" id="number-meta">10¹ · 10 tips</p>
+          </div>
+
+          <div class="hud__actions">
+            <button type="button" class="btn btn--primary" id="add-zero">
+              Add a zero
+            </button>
+            <button type="button" class="btn btn--ghost" id="reset-tree">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <nav class="figure-nav" aria-label="Jump to figure">
+          <p class="figure-nav__label">Figures</p>
+          <ul class="tier-legend" id="tier-legend"></ul>
+        </nav>
+      </div>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
